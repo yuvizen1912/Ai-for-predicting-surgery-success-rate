@@ -1,0 +1,257 @@
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Surgery Success Prediction</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'IBM Plex Sans', sans-serif; /* More technical font */
+            background: linear-gradient(135deg, #e0f7fa, #c2e5e7); /* Subtle gradient background */
+            color: #333;
+            text-align: center;
+            padding: 3rem;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+            border-radius: 12px;
+            padding: 40px;
+            width: 85%;
+            max-width: 900px;
+            margin: auto;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* Enhanced shadow */
+            backdrop-filter: blur(10px); /* Subtle glass effect */
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        h1, h2, h3 {
+            color: #2c3e50; /* Darker heading color */
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #3498db; /* Accent color */
+        }
+        .result-box {
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 5px solid #2ecc71; /* Success accent */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .result-box strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .result-box h1 {
+            font-size: 3rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        canvas {
+            margin: 25px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            background: white; /* Ensure canvas has a background */
+        }
+        .remedy-box {
+            background: #ecf0f1;
+            padding: 25px;
+            border-left: 5px solid #e67e22; /* Recommendation accent */
+            border-radius: 8px;
+            margin-top: 35px;
+            text-align: left;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .remedy-box h3 {
+            margin-top: 0;
+            color: #e67e22;
+            margin-bottom: 1rem;
+        }
+        .remedy-box ul {
+            padding-left: 20px;
+            list-style-type: square;
+        }
+        .remedy-box li {
+            margin-bottom: 0.6rem;
+            color: #555;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 35px;
+            padding: 12px 24px;
+            background: #3498db; /* Primary button color */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        /* Technical details section */
+        .technical-details {
+            margin-top: 40px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            text-align: left;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .technical-details h3 {
+            color: #777;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        .technical-details p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #3498db;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1><span style="color: #e74c3c;">AI</span>-Powered Surgical Outcome Analysis</h1>
+        <h2><span style="color: #1abc9c;">&#128137;</span> Predictive Insights</h2>
+
+        <div class="result-box">
+            <p>Based on the analyzed parameters, the predicted <strong class="highlight">probability of successful surgery</strong> is:</p>
+            <h1 style="color: {% if prediction > 85 %}#2ecc71{% elif prediction > 60 %}#f39c12{% else %}#e74c3c{% endif %};">{{ prediction }}<span style="font-size: 0.6em;">%</span></h1>
+
+            {% if prediction > 85 %}
+                <p style="color: #2ecc71;">&#10004; <strong class="highlight">High Confidence:</strong> The model indicates a strong likelihood of a successful surgical outcome.</p>
+            {% elif prediction > 60 %}
+                <p style="color: #f39c12;">&#9888; <strong class="highlight">Moderate Confidence:</strong> Proceed with caution and ensure all pre-operative protocols are strictly followed.</p>
+            {% else %}
+                <p style="color: #e74c3c;">&#10060; <strong class="highlight">Low Confidence:</strong> A more detailed evaluation and optimization of patient conditions are strongly recommended.</p>
+            {% endif %}
+        </div>
+
+        <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;">
+            <canvas id="gaugeChart" width="280" height="180"></canvas>
+            <canvas id="pieChart" width="280" height="280"></canvas>
+        </div>
+
+        <div class="remedy-box">
+            <h3><span style="color: #f39c12;">&#128221;</span> Evidence-Based Recommendations</h3>
+            <ul style="text-align:left;">
+                {% if prediction < 85 %}
+                    <li><span style="color: #e74c3c;">Monitor and stabilize</span> blood glucose levels if the patient has a history of diabetes mellitus.</li>
+                    <li><span style="color: #e74c3c;">Optimize Body Mass Index (BMI)</span> through tailored dietary and exercise regimens.</li>
+                    <li><span style="color: #e74c3c;">Conduct comprehensive pre-operative diagnostics</span>, including Electrocardiogram (ECG) and Computed Tomography (CT) scans, for a thorough assessment.</li>
+                    <li><span style="color: #e74c3c;">Engage a multidisciplinary team of specialists</span> for an in-depth evaluation of the patient's overall health status.</li>
+                {% else %}
+                    <li><span style="color: #2ecc71;">Proceed with the scheduled surgical intervention</span>, ensuring adherence to established medical protocols.</li>
+                    <li><span style="color: #2ecc71;">Maintain vigilant post-operative surveillance</span> and continue routine health monitoring.</li>
+                    <li><span style="color: #2ecc71;">Emphasize the importance of adequate hydration and rest</span> in the immediate pre-operative phase.</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="technical-details">
+            <h3><span style="color: #777;">&#128100;</span> Model Insights</h3>
+            <p>This prediction is generated by a sophisticated machine learning model trained on a comprehensive dataset of surgical outcomes and patient parameters. The model employs advanced statistical techniques to estimate the probability of success.</p>
+            <p>The <strong class="highlight">gauge chart</strong> visually represents the predicted success rate, offering an intuitive understanding of the likelihood of a positive outcome. The <strong class="highlight">pie chart</strong> provides a simplified illustration of potential contributing factors to surgical risk. Please note that these are generalized examples and may not reflect the specific factors influencing this prediction.</p>
+            <p>For a detailed breakdown of the factors influencing this specific prediction and their respective weights, please refer to the detailed analytical report.</p>
+        </div>
+
+        <a href="/" class="button">&#128257; Generate New Prediction</a>
+    </div>
+
+    <script>
+        const prediction = {{ prediction }};
+        // Success gauge chart
+        new Chart(document.getElementById('gaugeChart'), {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [prediction, 100 - prediction],
+                    backgroundColor: ['#2ecc71', '#e0e0e0'],
+                    borderWidth: 0,
+                    hoverOffset: 5
+                }]
+            },
+            options: {
+                cutout: '75%',
+                rotation: -90,
+                circumference: 180,
+                plugins: {
+                    tooltip: { enabled: false },
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: `Success Probability`,
+                        font: { size: 16 },
+                        color: '#555'
+                    },
+                    subtitle: {
+                        display: true,
+                        text: `${prediction}%`,
+                        font: { size: 24, weight: 'bold', color: '#333' }
+                    }
+                }
+            }
+        });
+
+        // Pie chart showing example risk contributions
+        new Chart(document.getElementById('pieChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Age', 'BMI', 'Procedure Complexity', 'Comorbidities', 'Prior Interventions'],
+                datasets: [{
+                    data: [25, 20, 22, 18, 15], // Dummy relative weights
+                    backgroundColor: ['#3498db', '#1abc9c', '#f1c40f', '#e74c3c', '#9b59b6'],
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Potential Risk Factor Distribution',
+                        font: { size: 16 },
+                        color: '#555'
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#555',
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+.

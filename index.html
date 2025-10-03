@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Surgery Success Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f9ff;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .dark-mode {
+            background-color: #1e1e1e;
+            color: white;
+        }
+        .toggle-btn {
+            float: right;
+            margin-top: -30px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #predict-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .sample-btn {
+            margin-top: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>AI Surgery Success Predictor</h2>
+        <button onclick="toggleDarkMode()" class="toggle-btn">Toggle Dark Mode 🌙</button>
+        <form action="/predict" method="post">
+            <label for="age">Age:</label>
+            <input type="number" name="age" required>
+
+            <label for="bmi">BMI (Body Mass Index):</label>
+            <input type="number" step="0.1" name="bmi" required>
+
+            <label for="surgery_type">Surgery Type:</label>
+            <select name="surgery_type" required>
+                <option value="cardiac">Cardiac ❤️</option>
+                <option value="neuro">Neuro 🧠</option>
+                <option value="ortho">Orthopedic 🦴</option>
+                <option value="general">General 🏥</option>
+            </select>
+
+            <label for="diabetes">Has Diabetes?</label>
+            <select name="diabetes" required>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+
+            <label for="prev_surgeries">Previous Surgeries:</label>
+            <input type="number" name="prev_surgeries" required>
+
+            <input type="submit" id="predict-btn" value="Predict Success Rate">
+        </form>
+
+        <button class="sample-btn" onclick="loadSampleData()">Load Sample Patient 🔁</button>
+
+        <canvas id="riskChart" width="400" height="200" style="margin-top:20px;"></canvas>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+
+        function loadSampleData() {
+            document.querySelector('[name="age"]').value = 55;
+            document.querySelector('[name="bmi"]').value = 27.3;
+            document.querySelector('[name="surgery_type"]').value = "cardiac";
+            document.querySelector('[name="diabetes"]').value = "1";
+            document.querySelector('[name="prev_surgeries"]').value = 2;
+        }
+
+        // Example ChartJS risk contribution chart (dummy data)
+        const ctx = document.getElementById('riskChart').getContext('2d');
+        const riskChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Age', 'BMI', 'Surgery Type', 'Diabetes', 'Previous Surgeries'],
+                datasets: [{
+                    label: 'Risk Contribution (%)',
+                    data: [20, 25, 15, 30, 10],
+                    backgroundColor: [
+                        '#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1'
+                    ],
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
